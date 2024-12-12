@@ -1,13 +1,14 @@
  import React, { useEffect, useState } from 'react'
-import { Col, Grid, Row }  from 'rsuite';
+import { Col, Grid, Row, Message }  from 'rsuite';
 import Sidebar from '../Components/Sidebar';
-import { ref, getDatabase, set } from 'firebase/database';
+import { ref, getDatabase, set, push, child, get } from 'firebase/database';
+
 
 
   function Home(){
-    const ws =  new WebSocket("ws://localhost:3000")
+    const ws =  new WebSocket("https://chatapp-ke5t.onrender.com")
     let [data, setData] = useState();
-    let [message, setMessage] = useState([]);
+    let [messages, setMessages] = useState();
     
     function input(e){
         
@@ -23,7 +24,7 @@ import { ref, getDatabase, set } from 'firebase/database';
         }
         ws.onmessage = (event)=>{
             const data = event.data;
-            setMessage((prevMessage)=> [...prevMessage, data])
+           // setMessage((prevMessage)=> [...prevMessage, data])
         }
         ws.onclose = ()=>{
             console.log('server disconnected')
@@ -32,33 +33,36 @@ import { ref, getDatabase, set } from 'firebase/database';
 
 
     }, [ws])
+
     function form(e){
         e.preventDefault();
       if(ws){
         ws.send(data)
       }
       const db = getDatabase();
-      set(ref(db, 'chats/'),{
-          chat: data
+      let name = JSON.parse(localStorage.getItem('user')).displayName;
+      
+      push(ref(db, 'chat/'),{
+        name: name,
+        message: data
+      })
+      get(child(ref(db), 'chat')).then((snapshot)=>{
+      
+        if(snapshot){
+            const usersArray = Object.keys(snapshot.val()).map((key) => ({ id: key, name: snapshot.val()[key].name, message: snapshot.val()[key].message}));
+            setMessages(usersArray)
+        }
 
       })
 
+      
     }
-    useEffect(()=>{
-       
-
-    }, message)
-
-     
+    
     return(
         <>
 
-          <form onSubmit={form}>
-          <input type = "text"  onChange={input}/>
-          <button type='submit'>submit</button>
-          </form>
-          <h1>{message}</h1>
-             <Grid fluid className='h-100 border'>
+          
+             <Grid fluid className='h-100 '>
             <Row>
                 <Col xs={24} md={9}>
                 <Sidebar/>
@@ -67,6 +71,33 @@ import { ref, getDatabase, set } from 'firebase/database';
             </Row>
 
             </Grid> 
+            <div className='max-w-6xl m-auto '>
+            <div className='mt-16 min-h-96 border p-3 grid items-end overflow-y-auto'>
+            
+             {messages?messages.map(Element =>(
+                <div className='mt-3 '>
+                <p>{Element.name}</p>
+                <Message type="success" className=' w-fit'>
+
+                {Element.message}
+                </Message>
+
+                </div>
+              
+
+             )):''}
+
+             <div className='sticky-bottom  pb-6 pt-6'>
+               <input type = "text" name='text' className=' w-11/12 h-9 border outline-none  rounded-md' onChange={input}/><button className='text-white font-bold bg-blue-400 text-lg  ml-3 rounded-lg w-16 h-9' onClick={form}>send</button>
+
+            </div>
+
+            
+            </div>
+
+                
+            </div> 
+            
 
 
         

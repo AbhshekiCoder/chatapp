@@ -6,14 +6,21 @@ import { auth, database } from '../misc/firebase';
 
 export const ProfileProvider = ({children}) =>{
     const[profile, setProfile] = useState(true);
+    
     useEffect(()=>{
-        let user = localStorage.getItem("users");
-        auth.onAuthStateChanged(authobj =>{
-            console.log(authobj)
-            
-        })
+        let user = localStorage.getItem("user");
+        if(user){
+            setProfile(true)
+            console.log(user)
+        }
+        else{
+            setProfile(false)
+        }
+       
 
     },[profile])
+
+
 
     return(
         <ProfileContext.Provider value={profile}>

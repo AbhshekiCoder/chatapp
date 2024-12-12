@@ -4,9 +4,10 @@ import {signInWithPopup} from 'firebase/auth';
 import {auth, database} from '../misc/firebase';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { Button, ButtonGroup, ButtonToolbar, Container, Grid, Row, Panel, Col } from 'rsuite';
+import { useNavigate } from 'react-router-dom';
 
 function SignIn(){
-
+    let navigate = useNavigate();
 
     const onFacebookSigin = () =>{
        
@@ -14,20 +15,20 @@ function SignIn(){
     const onGoogleSignin = async() =>{
        const provider = new GoogleAuthProvider();
       const  user =  await signInWithPopup(auth, provider);
-        console.log(user)
+       
         auth.onAuthStateChanged(user =>{
-            console.log(user)
+            localStorage.setItem('user',  JSON.stringify(user))
+            navigate('/')
         });
     }
     return(
         <>
-            <div className=' m-auto border'>
-     
-     <div className=' text-center'>
+    <div className=' m-auto border'>
+
+      <div className=' text-center'>
          <h5 className=' text-xl'>Welcome to chat</h5>
          <p>Progrresive chat plateform for neopythes </p>
-         
-     </div>
+      </div>
      <div className=' text-center flex justify-center  ' >
          <button block color = "blue" className=' to-blue-500 bg-blue-500 block text-white p-1  w-96' onClick={onFacebookSigin}>
              Continue with facebook<i className = "fa fa-facebook"></i>
@@ -39,8 +40,8 @@ function SignIn(){
          </button>
      </div>
 
-     
-</div>
+
+     </div>
         </>
 
     )
