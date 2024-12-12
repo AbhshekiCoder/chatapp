@@ -1,7 +1,7 @@
  import React, { useEffect, useState } from 'react'
 import { Col, Grid, Row, Message }  from 'rsuite';
 import Sidebar from '../Components/Sidebar';
-import { ref, getDatabase, set, push, child, get } from 'firebase/database';
+import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/database';
 
 
 
@@ -57,6 +57,16 @@ import { ref, getDatabase, set, push, child, get } from 'firebase/database';
 
       
     }
+    useEffect(()=>{
+        const db = getDatabase();
+        let useref = ref(db, 'chat');
+        onValue(useref, (snapshot)=>{
+            const usersArray = Object.keys(snapshot.val()).map((key) => ({ id: key, name: snapshot.val()[key].name, message: snapshot.val()[key].message}));
+            setMessages(usersArray)
+
+        })
+
+    },[])
     
     return(
         <>
