@@ -107,7 +107,8 @@ function DashboardToggle(){
             <div className="p-3 border text-blue-400  overflow-y-scroll  h-60 " >
             {Element.name}
             <div className="flex mt-3 ">
-         {friends.includes(Element.name)?<button className="border rounded-md p-2 bg-green-600 text-white added" id={Element.email} onClick={()=>{added(Element.email)}}>remove friend</button>:<button className="border rounded-md p-2 bg-green-600 text-white add" id={Element.email} onClick={()=>{add(Element.name)}}>Add friend</button>}
+         {friends?friends.includes(Element.name)?<button className="border rounded-md p-2 bg-green-600 text-white added" id={Element.email} onClick={()=>{added(Element.email)}}>remove friend</button>:<button className="border rounded-md p-2 bg-green-600 text-white add" id={Element.email} onClick={()=>{add(Element.name)}}>Add friend</button>:''}
+           
             </div>
             </div>
 
