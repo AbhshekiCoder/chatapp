@@ -15,10 +15,11 @@ function DashboardToggle(){
     console.log(isOpen);
     let array =  JSON.parse(localStorage.getItem("friends")) || [];
     let navigate = useNavigate()
+    let friends = localStorage.getItem("friends");
     useEffect(()=>{
         let data = JSON.parse(localStorage.getItem("user"));
         setUser(data)
-        if(data){
+       
             const db = getDatabase();
             let useref = ref(db, 'users');
             onValue(useref, (snapshot)=>{
@@ -37,7 +38,7 @@ function DashboardToggle(){
             setChats(friend)
            
 
-        }
+        
        
     },[])
     function add(e){
@@ -106,7 +107,7 @@ function DashboardToggle(){
             <div className="p-3 border text-blue-400  overflow-y-scroll  h-60 " >
             {Element.name}
             <div className="flex mt-3 ">
-         {localStorage.getItem('friends').includes(Element.name)?<button className="border rounded-md p-2 bg-green-600 text-white added" id={Element.email} onClick={()=>{added(Element.email)}}>remove friend</button>:<button className="border rounded-md p-2 bg-green-600 text-white add" id={Element.email} onClick={()=>{add(Element.name)}}>Add friend</button>}
+         {friends.includes(Element.name)?<button className="border rounded-md p-2 bg-green-600 text-white added" id={Element.email} onClick={()=>{added(Element.email)}}>remove friend</button>:<button className="border rounded-md p-2 bg-green-600 text-white add" id={Element.email} onClick={()=>{add(Element.name)}}>Add friend</button>}
             </div>
             </div>
 
