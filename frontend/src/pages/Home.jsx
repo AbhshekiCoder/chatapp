@@ -1,4 +1,4 @@
- import React, { useEffect, useState } from 'react'
+ import React, { useEffect, useRef, useState } from 'react'
 import { Col, Grid, Row, Message }  from 'rsuite';
 import Sidebar from '../Components/Sidebar';
 import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/database';
@@ -14,7 +14,7 @@ import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/datab
         
         setData(e.target.value)
     }
-  
+    const chatBoxRef = useRef(null)
    
      useEffect(()=>{
        
@@ -36,9 +36,8 @@ import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/datab
 
     function form(e){
         e.preventDefault();
-      if(ws){
-        ws.send(data)
-      }
+    
+        document.querySelector('.item').value = '';
       const db = getDatabase();
       let name = JSON.parse(localStorage.getItem('user')).displayName;
       
@@ -46,15 +45,10 @@ import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/datab
         name: name,
         message: data
       })
-      get(child(ref(db), 'chat')).then((snapshot)=>{
+      let container  = document.querySelector('.message')
+ 
+     container.scrollTop  =   container.scrollHeight
       
-        if(snapshot){
-            const usersArray = Object.keys(snapshot.val()).map((key) => ({ id: key, name: snapshot.val()[key].name, message: snapshot.val()[key].message}));
-            setMessages(usersArray)
-        }
-
-      })
-
       
     }
     useEffect(()=>{
@@ -63,10 +57,47 @@ import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/datab
         onValue(useref, (snapshot)=>{
             const usersArray = Object.keys(snapshot.val()).map((key) => ({ id: key, name: snapshot.val()[key].name, message: snapshot.val()[key].message}));
             setMessages(usersArray)
+      
+            let container  = document.querySelector('.message')
+ 
+              container.scrollTop  =   container.scrollHeight
+          
 
         })
 
+
     },[])
+    useEffect(()=>{
+        if(chatBoxRef.current){
+            chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+        }
+
+  },[messages])
+  const [inputValue, setInputValue] = useState("");
+const count = useRef(0);
+
+
+
+    function search(e){
+        if(e.key == "Enter"){
+          document.querySelector('.item').value = '';
+            
+              const db = getDatabase();
+              let name = JSON.parse(localStorage.getItem('user')).displayName;
+              
+              push(ref(db, 'chat/'),{
+                name: name,
+                message: data
+              })
+              let container  = document.querySelector('.message')
+          
+             
+              
+
+        }
+
+    }
+
     
     return(
         <>
@@ -82,12 +113,12 @@ import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/datab
 
             </Grid> 
             <div className='max-w-6xl m-auto '>
-            <div className='mt-16 min-h-96 border p-3 grid items-end overflow-y-auto'>
+            <div className='mt-16  border p-3   overflow-y-scroll message' style={{height: "500px"}} ref={chatBoxRef}>
             
              {messages?messages.map(Element =>(
-                <div className='mt-3 '>
+                <div className='mt-3 border'>
                 <p>{Element.name}</p>
-                <Message type="success" className=' w-fit'>
+                <Message type="success" className=' w-fit'> 
 
                 {Element.message}
                 </Message>
@@ -97,19 +128,19 @@ import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/datab
 
              )):''}
 
-             <div className='sticky-bottom  pb-6 pt-6'>
-               <input type = "text" name='text' className=' w-11/12 h-9 border outline-none  rounded-md' onChange={input}/><button className='text-white font-bold bg-blue-400 text-lg  ml-3 rounded-lg w-16 h-9' onClick={form}>send</button>
-
-            </div>
+            
 
             
             </div>
+            <div className=' pb-6 pt-6 sticky-bottom'>
+               <input type = "text" name='text' className='item w-11/12 h-9 border outline-none  rounded-md' onChange={input} onKeyDown={search}/><button className='text-white font-bold bg-blue-400 text-lg  ml-3 rounded-lg w-16 h-9' onClick={form} >send</button>
 
+            </div>
                 
             </div> 
             
 
-
+         
         
 
         </>

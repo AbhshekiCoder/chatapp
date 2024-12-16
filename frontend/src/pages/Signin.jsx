@@ -4,10 +4,11 @@ import {signInWithPopup} from 'firebase/auth';
 import {auth, database} from '../misc/firebase';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { Button, ButtonGroup, ButtonToolbar, Container, Grid, Row, Panel, Col } from 'rsuite';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Navigate } from 'react-router-dom';
+import { getDatabase, push,  ref } from 'firebase/database';
 
 function SignIn(){
-    let navigate = useNavigate();
+    let Navigate = useNavigate();
 
     const onFacebookSigin = () =>{
        
@@ -18,7 +19,19 @@ function SignIn(){
        
         auth.onAuthStateChanged(user =>{
             localStorage.setItem('user',  JSON.stringify(user))
-            navigate('/')
+            let db = getDatabase();
+            let name = JSON.parse(localStorage.getItem('user')).displayName;
+            let email = JSON.parse(localStorage.getItem('user')).email;
+            push(ref(db, 'users'),{
+                name: name,
+                email: email
+
+            })
+
+            Navigate('/')
+            window.location.reload()
+          
+           
         });
     }
     return(
