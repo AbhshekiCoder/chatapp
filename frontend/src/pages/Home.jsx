@@ -59,8 +59,12 @@ import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/datab
             setMessages(usersArray)
       
             let container  = document.querySelector('.message')
- 
-              container.scrollTop  =   container.scrollHeight
+            let user = localStorage.getItem('user');
+            if(user){
+                container.scrollTop  =   container.scrollHeight
+
+            }
+            
           
 
         })

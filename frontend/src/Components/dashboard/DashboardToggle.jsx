@@ -18,22 +18,26 @@ function DashboardToggle(){
     useEffect(()=>{
         let data = JSON.parse(localStorage.getItem("user"));
         setUser(data)
-        const db = getDatabase();
-        let useref = ref(db, 'users');
-        onValue(useref, (snapshot)=>{
-            const usersArray = Object.keys(snapshot.val()).map((key) => ({ id: key, name: snapshot.val()[key].name, email: snapshot.val()[key].email}));
-           let array = usersArray.filter((Element)=> Element.name != data.displayName);
-           setData(array)
+        if(data){
+            const db = getDatabase();
+            let useref = ref(db, 'users');
+            onValue(useref, (snapshot)=>{
+                const usersArray = Object.keys(snapshot.val()).map((key) => ({ id: key, name: snapshot.val()[key].name, email: snapshot.val()[key].email}));
+               let array = usersArray.filter((Element)=> Element.name != data.displayName);
+               setData(array)
+    
+            })
+            let userref = ref(db, 'friends')
+            let nameQuery = query(userref, orderByChild('friend'), equalTo (data.displayName))
+            onValue(userref, (snapshot)=>{
+                console.log(snapshot.val())
+            })
+            let friend = JSON.parse(localStorage.getItem('friends'))
+            console.log(friend)
+            setChats(friend)
+           
 
-        })
-        let userref = ref(db, 'friends')
-        let nameQuery = query(userref, orderByChild('friend'), equalTo (data.displayName))
-        onValue(userref, (snapshot)=>{
-            console.log(snapshot.val())
-        })
-        let friend = JSON.parse(localStorage.getItem('friends'))
-        console.log(friend)
-        setChats(friend)
+        }
        
     },[])
     function add(e){
