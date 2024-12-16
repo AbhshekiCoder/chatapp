@@ -19,7 +19,7 @@ function DashboardToggle(){
     useEffect(()=>{
         let data = JSON.parse(localStorage.getItem("user"));
         setUser(data)
-       
+        if(data){
             const db = getDatabase();
             let useref = ref(db, 'users');
             onValue(useref, (snapshot)=>{
@@ -36,6 +36,10 @@ function DashboardToggle(){
             let friend = JSON.parse(localStorage.getItem('friends'))
             console.log(friend)
             setChats(friend)
+
+        }
+       
+           
            
 
         
