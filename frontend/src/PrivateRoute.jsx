@@ -4,7 +4,7 @@ import { useProfile } from  './context/profilecontext';
  const PrivateRoute = function(){
     const profile = useProfile();
     console.log(profile)
-   return profile?<Outlet/>:<Navigate to = "/Signin"/>
+   return profile?<Outlet/>:<Navigate to = "/signin"/>
 
  }
  export default PrivateRoute;

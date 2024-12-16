@@ -22,7 +22,7 @@ function App() {
   <Route path="/" element = {<Home/>}></Route>
  </Route>
  <Route element = {<PublicRoute/>}>
- <Route path="/Signin" element ={<Signin/>}></Route>
+ <Route path="/signin" element ={<Signin/>}></Route>
 
  </Route>
   </Routes>
