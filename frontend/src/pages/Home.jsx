@@ -40,30 +40,34 @@ import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/datab
         document.querySelector('.item').value = '';
       const db = getDatabase();
       let name = JSON.parse(localStorage.getItem('user')).displayName;
-      
-      push(ref(db, 'chat/'),{
+      let chat = localStorage.getItem('chat');
+ 
+      let chatid = chat;
+      let userref = ref(db, 'chatapp/')
+      push(ref(db, `chatapp/${chatid}/` ),{
         name: name,
         message: data
+          
+
+
+      } ).then(()=>{
+          console.log("created")
       })
-      let container  = document.querySelector('.message')
- 
-     container.scrollTop  =   container.scrollHeight
+
       
       
     }
     useEffect(()=>{
         const db = getDatabase();
-        let useref = ref(db, 'chat');
+        let chat = localStorage.getItem('chat');
+ 
+        let chatid = chat;
+        let useref = ref(db, `chatapp/${chatid}`);
         onValue(useref, (snapshot)=>{
             const usersArray = Object.keys(snapshot.val()).map((key) => ({ id: key, name: snapshot.val()[key].name, message: snapshot.val()[key].message}));
             setMessages(usersArray)
+            console.log(usersArray)
       
-            let container  = document.querySelector('.message')
-            let user = localStorage.getItem('user');
-            if(user){
-                container.scrollTop  =   container.scrollHeight
-
-            }
             
           
 
@@ -77,8 +81,7 @@ import { ref, getDatabase, set, push, child, get, onValue } from 'firebase/datab
         }
 
   },[messages])
-  const [inputValue, setInputValue] = useState("");
-const count = useRef(0);
+
 
 
 
@@ -88,13 +91,21 @@ const count = useRef(0);
             
               const db = getDatabase();
               let name = JSON.parse(localStorage.getItem('user')).displayName;
-              
-              push(ref(db, 'chat/'),{
+              let chat = localStorage.getItem('chat');
+ 
+              let chatid = chat;
+          
+              push(ref(db, `chatapp/${chatid}/` ),{
                 name: name,
                 message: data
+                  
+        
+        
+              } ).then(()=>{
+                  console.log("created")
               })
-              let container  = document.querySelector('.message')
-          
+        
+              
              
               
 

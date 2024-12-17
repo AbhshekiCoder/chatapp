@@ -3,16 +3,17 @@ import { useModalState } from "../../misc/customhook";
 import DashboardIcon from '@rsuite/icons/Dashboard';
 import { AvatarGroup, Avatar } from 'rsuite';
 import { useEffect, useState } from "react";
-import { getDatabase,  onValue, ref, push, query, orderByChild, equalTo, get } from "firebase/database";
+import { getDatabase,  onValue, ref, push, query, orderByChild, equalTo, get, set } from "firebase/database";
 import { json, Navigate, useNavigate } from "react-router";
 
 function DashboardToggle(){
-    const {isOpen, close, open} = useModalState();
+    const [open, setOpen] = useState(false);
+    const [close, setClose] = useState(true);
     let [user, setUser] = useState();
     let [data, setData] = useState();
     let [chats, setChats] = useState();
     let [sidebar, setSidebar] = useState();
-    console.log(isOpen);
+
     let array =  JSON.parse(localStorage.getItem("friends")) || [];
     let navigate = useNavigate()
     let friends = localStorage.getItem("friends");
@@ -73,18 +74,37 @@ function DashboardToggle(){
         let user = JSON.parse(localStorage.getItem('user'));
         
     
-        localStorage.setItem('chat', `${user.displayName.split(' ')[0]} and ${e.split(' ')[0]}` )
-        setSidebar(false)
+        localStorage.setItem('chat', `${user.displayName.split(' ')[0]} and ${e.split(' ')[0]}` );
+        let chat = localStorage.getItem('chat');
+        let db = getDatabase();
+        let chatid = chat;
+        let userref = ref(db, 'chatapp/')
+        set(ref(db, `chatapp/${chatid}` ),{
+            
+
+
+        } ).then(()=>{
+            console.log("created")
+        })
+
+
+
+      
+        setOpen(false);
+
     
+    }
+    function sidebar1(){
+        setOpen(true)
     }
     
     return(
         <>
-        <Button block color="blue" className="bg-blue-500 text-white font-bold " onClick={open}>
+        <Button block color="blue" className="bg-blue-500 text-white font-bold " onClick={sidebar1}>
         <DashboardIcon className="text-white mr-3 font-bold "/> Dashboard 
 
         </Button>
-        <Drawer placement="left"  open = {isOpen}  onClose = {close} className="border bg-slate-500 max-w-4xl max-md:max-w-2xl max-sm:max-w-xs"   >
+        <Drawer placement="left"  open = {open}  onClose={()=>setOpen(false)} Name="border bg-slate-500 max-w-4xl max-md:max-w-2xl max-sm:max-w-xs"   >
         <Drawer.Header>
         <Drawer.Title className="flex justify-between"><div>hii</div><div><button className=" h-9  w-20 rounded-lg  bg-blue-600 text-white font-bold"onClick={logout}>Logout</button></div></Drawer.Title>
 
@@ -106,9 +126,9 @@ function DashboardToggle(){
         other peoples
 
         </div>
-        <div>
+        <div className="overflow-y-scroll  h-60 ">
         {data?data.map(Element =>(
-            <div className="p-3 border text-blue-400  overflow-y-scroll  h-60 " >
+            <div className="p-3 border text-blue-400  " >
             {Element.name}
             <div className="flex mt-3 ">
          {friends?friends.includes(Element.name)?<button className="border rounded-md p-2 bg-green-600 text-white added" id={Element.email} onClick={()=>{added(Element.email)}}>remove friend</button>:<button className="border rounded-md p-2 bg-green-600 text-white add" id={Element.email} onClick={()=>{add(Element.name)}}>Add friend</button>:<button className="border rounded-md p-2 bg-green-600 text-white add" id={Element.email} onClick={()=>{add(Element.name)}}>Add friend</button>}
@@ -120,7 +140,7 @@ function DashboardToggle(){
 
 
         </div>
-        <div>
+        <div className="h-60 overflow-y-auto">
             <h1 className="pl-3 ">friends</h1>
             <div className="p-3">
                 {chats?chats.map((Element)=>(
